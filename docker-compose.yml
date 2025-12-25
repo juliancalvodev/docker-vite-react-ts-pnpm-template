@@ -1,0 +1,27 @@
+services:
+  frontend:
+    build:
+      context: .
+      target: dev
+    container_name: react-vite-app
+    ports:
+      - "5173:5173"
+    volumes:
+      # Sincroniza código fuente en tiempo real
+      - .:/app
+      # Volumen anónimo para node_modules: evita conflictos con el host y mejora rendimiento
+      - /app/node_modules
+      # Volumen externo compartido para el store de pnpm (caché global de paquetes)
+      - pnpm_shared_store:/pnpm/store
+    environment:
+      # Activa el polling para asegurar que el Hot Reload funcione en Docker (especialmente en Windows/Mac)
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=1800 # Intervalo de 1.8 segundo vía variable de entorno
+      - PNPM_CONFIG_STORE_DIR=/pnpm/store
+    stdin_open: true
+    tty: true
+
+volumes:
+  # Declaramos el volumen como externo para que varios proyectos compartan las mismas librerías
+  pnpm_shared_store:
+    external: true

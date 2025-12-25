@@ -1,0 +1,38 @@
+# --- Dependencias (pnpm) ---
+# Ignoramos la carpeta de módulos ya que Docker la gestiona internamente
+node_modules/
+.pnpm-debug.log*
+.pnpm-store/
+
+# --- Artefactos de Build ---
+# No queremos subir la carpeta de producción (dist)
+dist/
+dist-ssr/
+*.local
+
+# --- Docker ---
+# Ignoramos archivos de datos de contenedores si usas volúmenes locales
+.docker/
+# Si guardas variables de entorno sensibles
+.env
+.env.local
+.env.*.local
+
+# --- Logs y Debugging ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Editor / Sistema Operativo ---
+.DS_Store
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# --- Pruebas ---
+/coverage
