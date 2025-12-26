@@ -1,5 +1,5 @@
 services:
-  frontend:
+  app-react:
     build:
       context: .
       target: dev
@@ -8,7 +8,7 @@ services:
       - "5173:5173"
     volumes:
       # Sincroniza código fuente en tiempo real
-      - .:/app
+      - ./app:/app
       # Volumen anónimo para node_modules: evita conflictos con el host y mejora rendimiento
       - /app/node_modules
       # Volumen externo compartido para el store de pnpm (caché global de paquetes)

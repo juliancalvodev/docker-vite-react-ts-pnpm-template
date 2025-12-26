@@ -10,11 +10,11 @@ WORKDIR /app
 # --- Etapa de Desarrollo: Entorno interactivo para programar ---
 FROM base AS dev
 # Copiamos archivos de dependencias para aprovechar la caché de capas de Docker
-COPY package.json pnpm-lock.yaml* ./
+COPY app/package.json app/pnpm-lock.yaml* ./
 # Instalación de dependencias (se sincronizará con el volumen del store si se usa Compose)
 RUN pnpm install --frozen-lockfile
 # Copiamos el resto del código
-COPY . .
+COPY app/ .
 # Exponemos el puerto de Vite
 EXPOSE 5173
 # Comando para iniciar en modo desarrollo con host expuesto para Docker
@@ -22,9 +22,9 @@ CMD ["pnpm", "run", "dev", "--host"]
 
 # --- Etapa de Build: Transpilación y minificación del código ---
 FROM base AS build-stage
-COPY package.json pnpm-lock.yaml ./
+COPY app/package.json app/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
-COPY . .
+COPY app/ .
 RUN pnpm run build
 
 # --- Etapa de Producción: Servidor ligero para despliegue ---

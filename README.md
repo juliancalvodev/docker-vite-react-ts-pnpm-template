@@ -31,15 +31,16 @@ Esta es una plantilla profesional para desarrollar aplicaciones modernas con **R
 
 1. **Inicializar un nuevo proyecto**
 
-	Ejecuta este comando en la raíz de la carpeta donde quieras crear el proyecto (esto descargará la imagen de Node y ejecutará el scaffolding de Vite):
+	Ejecuta este comando en la carpeta del proyecto para crear la subcarpeta app/ donde estaran los archivos de la aplicación (esto descargará la imagen de Node y ejecutará el scaffolding de Vite):
 
 	```bash
 	docker run --rm \
-	  -v $(pwd):/app \
+	  -v $(pwd):/work \
 	  -v pnpm_shared_store:/pnpm/store \
 	  -e PNPM_CONFIG_STORE_DIR=/pnpm/store \
-	  -w /app node:24.12.0-alpine3.22 \
-	  sh -c "corepack enable && pnpm create vite . --template react-ts && pnpm install"
+	  -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
+	  -w /work node:24.12.0-alpine3.22 \
+	  sh -c "corepack enable && pnpm create vite app --template react-ts --yes && pnpm install --dir app"
 	```
 
 2. **Levantar Entorno de Desarrollo**
@@ -108,5 +109,5 @@ Este proyecto está bajo la Licencia MIT. Siéntete libre de usarlo, modificarlo
 Si usas mucho la terminal, podrías añadir este alias a tu archivo ```.bashrc``` o ```.zshrc``` de tu host para inicializar proyectos con un solo comando corto:
 
 ```bash
-alias vite-docker='docker run --rm -v $(pwd):/app -v pnpm_shared_store:/pnpm/store -e PNPM_CONFIG_STORE_DIR=/pnpm/store -w /app node:24.12.0-alpine3.22 sh -c "corepack enable && pnpm create vite . --template react-ts && pnpm install"'
+alias vite-docker='docker run --rm -v $(pwd):/work -v pnpm_shared_store:/pnpm/store -e PNPM_CONFIG_STORE_DIR=/pnpm/store -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 -w /work node:24.12.0-alpine3.22 sh -c "corepack enable && pnpm create vite app --template react-ts --yes && pnpm install --dir app"'
 ```
