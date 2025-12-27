@@ -1,36 +1,38 @@
-# --- Etapa Base: Instalación de pnpm y configuración del entorno ---
+# Stage 1: Base - Instalación de pnpm y configuración del entorno ---
 FROM node:24.12.0-alpine3.22 AS base
 # Configuración de pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV PNPM_CONFIG_STORE_DIR="/pnpm/store"
-RUN corepack enable
 WORKDIR /app
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# --- Etapa de Desarrollo: Entorno interactivo para programar ---
-FROM base AS dev
-# Copiamos archivos de dependencias para aprovechar la caché de capas de Docker
-COPY app/package.json app/pnpm-lock.yaml* ./
-# Instalación de dependencias (se sincronizará con el volumen del store si se usa Compose)
-RUN pnpm install --frozen-lockfile
-# Copiamos el resto del código
-COPY app/ .
+# Stage 2: Dependencies - Solo instala si cambian los lockfiles
+FROM base AS deps
+COPY app/package.json app/pnpm-lock.yaml ./
+# En local, el compose montará el store, pero aquí lo preparamos
+# AJUSTE CLAVE: Usamos un mount de caché apuntando a la MISMA ruta del store.
+# Esto acelera el build y asegura que los enlaces simbólicos se creen correctamente.
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --frozen-lockfile
+RUN pnpm config set store-dir /pnpm/store --global
+
+# Stage 3: Development (Target para Compose)
+FROM deps AS dev
+# No copiamos el código aquí porque el Compose lo monta como volumen
 # Exponemos el puerto de Vite
 EXPOSE 5173
 # Comando para iniciar en modo desarrollo con host expuesto para Docker
-CMD ["pnpm", "run", "dev", "--host"]
+CMD ["pnpm", "dev", "--host", "0.0.0.0"]
 
-# --- Etapa de Build: Transpilación y minificación del código ---
-FROM base AS build-stage
-COPY app/package.json app/pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+# Stage 4: Builder (Para producción)
+FROM deps AS builder
 COPY app/ .
-RUN pnpm run build
+RUN pnpm build
 
-# --- Etapa de Producción: Servidor ligero para despliegue ---
+# Stage 5: Production (Imagen final ligera)
 FROM nginx:1.28.1-alpine3.23 AS production
-# Copiamos los archivos estáticos generados por Vite a la carpeta de Nginx
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-# Exponemos el puerto estándar de HTTP
+COPY --from=builder /app/dist /usr/share/nginx/html
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
