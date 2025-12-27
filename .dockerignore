@@ -1,7 +1,10 @@
 # Evita que Docker copie archivos innecesarios al construir la imagen
-node_modules
-dist
+**/node_modules
+**/dist
+.pnpm-store/
 .git
 .gitignore
 .dockerignore
+docker-compose.yml
+Dockerfile
 README.md

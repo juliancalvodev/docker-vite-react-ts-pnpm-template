@@ -53,12 +53,15 @@ Esta es una plantilla profesional para desarrollar aplicaciones modernas con **R
 
 	Accede a la aplicación en: [http://localhost:5173](http://localhost:5173)
 
+	> [!TIP]
+	> Si los cambios en el código no se reflejan automáticamente (Hot Reload), asegúrate de que tu `vite.config.ts` incluya la configuración de `watch` con `usePolling: true` (ya configurado vía variables de entorno en el `docker-compose.yml`).
+
 3. **Instalar nuevas dependencias**
 
 	Para añadir paquetes sin salir del entorno Docker (ejemplo: ```axios```):
 
 	```bash
-	docker-compose exec frontend pnpm add axios
+	docker-compose exec app-react pnpm add axios
 	```
 
 4. **Construir Imagen de Producción**
