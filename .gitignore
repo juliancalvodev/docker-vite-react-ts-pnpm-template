@@ -1,6 +1,6 @@
-# --- Dependencias (pnpm) ---
-.pnpm-debug.log*
-.pnpm-store/
+## --- Dependencias (pnpm) ---
+#.pnpm-debug.log*
+#.pnpm-store/
 
 # --- Docker ---
 # Ignoramos archivos de datos de contenedores si usas volúmenes locales

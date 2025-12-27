@@ -37,10 +37,9 @@ Esta es una plantilla profesional para desarrollar aplicaciones modernas con **R
 	docker run --rm \
 	  -v $(pwd):/work \
 	  -v pnpm_shared_store:/pnpm/store \
-	  -e PNPM_CONFIG_STORE_DIR=/pnpm/store \
 	  -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
 	  -w /work node:24.12.0-alpine3.22 \
-	  sh -c "corepack enable && pnpm create vite app --template react-ts --yes && pnpm install --dir app"
+	  sh -c "corepack enable && pnpm create vite app --template react-ts --yes && pnpm install --dir app --store-dir /pnpm/store"
 	```
 
 2. **Levantar Entorno de Desarrollo**

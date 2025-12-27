@@ -1,7 +1,4 @@
 # Evita que Docker copie archivos innecesarios al construir la imagen
-**/node_modules
-**/dist
-.pnpm-store/
 .git
 .gitignore
 .dockerignore
