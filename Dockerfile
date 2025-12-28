@@ -8,16 +8,16 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
 # Creamos las carpetas y asignamos dueño al usuario 'node' (UID 1000 en Alpine)
-RUN mkdir -p /pnpm /app && chown -R node:node /pnpm /app
+RUN mkdir -p /pnpm/store /app && chown -R node:node /pnpm /app
 
 # Define el directorio de trabajo principal dentro del contenedor
 WORKDIR /app
 
-# Ahora ejecutamos el resto como usuario node
-USER node
-
 # Habilita Corepack (gestor nativo de Node para pnpm/yarn) y activa la versión más reciente de pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Ahora ejecutamos el resto como usuario node
+USER node
 
 # Establece la ubicación del "content-addressable store". Esto es vital para que pnpm
 # sepa dónde buscar las librerías vinculadas (symlinks) tanto en build como en runtime.
@@ -28,12 +28,12 @@ RUN pnpm config set store-dir /pnpm/store --global
 FROM base AS deps
 
 # Copia solo los archivos de definición de dependencias para aprovechar la caché de capas de Docker
-COPY app/package.json app/pnpm-lock.yaml ./
+COPY --chown=node:node app/package.json app/pnpm-lock.yaml ./
 
 # --mount=type=cache: Crea una caché persistente en el host de Docker identificada como 'pnpm'.
 # target=/pnpm/store: Monta esa caché exactamente donde pnpm espera encontrar sus librerías.
 # --frozen-lockfile: Asegura que la instalación sea exacta al lockfile sin modificarlo.
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000 \
     pnpm install --frozen-lockfile
 
 
@@ -52,7 +52,7 @@ CMD ["pnpm", "dev", "--host", "0.0.0.0"]
 FROM deps AS builder
 
 # Copia el resto del código fuente del proyecto
-COPY app/ .
+COPY --chown=node:node app/ .
 
 # Ejecuta el script de construcción (genera la carpeta /dist con archivos estáticos)
 RUN pnpm build

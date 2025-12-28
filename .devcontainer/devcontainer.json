@@ -8,6 +8,9 @@
 	"service": "app-react",
 	// Carpeta donde VS Code abrirá el proyecto dentro del contenedor
 	"workspaceFolder": "/app",
+	// Importante: Al entrar al contenedor, queremos que los permisos sean correctos
+	// y que pnpm esté listo para usarse.
+	"remoteUser": "node",
 	// Configuraciones de la interfaz de VS Code dentro del contenedor
 	"customizations": {
 		"vscode": {
@@ -27,9 +30,6 @@
 			]
 		}
 	},
-	// Importante: Al entrar al contenedor, queremos que los permisos sean correctos
-	// y que pnpm esté listo para usarse.
-	"remoteUser": "node",
 	// Expone el puerto de Vite dentro de la interfaz de VS Code
 	"forwardPorts": [
 		5173
