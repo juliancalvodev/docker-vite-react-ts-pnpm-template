@@ -3,9 +3,9 @@ FROM node:24.12.0-alpine3.22 AS base
 # Configuración de pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-ENV PNPM_CONFIG_STORE_DIR="/pnpm/store"
 WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN pnpm config set store-dir /pnpm/store --global
 
 # Stage 2: Dependencies - Solo instala si cambian los lockfiles
 FROM base AS deps
@@ -15,7 +15,6 @@ COPY app/package.json app/pnpm-lock.yaml ./
 # Esto acelera el build y asegura que los enlaces simbólicos se creen correctamente.
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile
-RUN pnpm config set store-dir /pnpm/store --global
 
 # Stage 3: Development (Target para Compose)
 FROM deps AS dev
