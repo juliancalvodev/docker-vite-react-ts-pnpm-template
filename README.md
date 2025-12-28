@@ -104,12 +104,3 @@ Este proyecto está bajo la Licencia MIT. Siéntete libre de usarlo, modificarlo
 2. Clona tu nuevo repositorio.
 
 3. Sigue la **Guía de Inicio Rápido**.
-
-
-## Consejo de "pro"
-
-Si usas mucho la terminal, podrías añadir este alias a tu archivo ```.bashrc``` o ```.zshrc``` de tu host para inicializar proyectos con un solo comando corto:
-
-```bash
-alias vite-docker='docker run --rm -v $(pwd):/work -v pnpm_shared_store:/pnpm/store -e PNPM_CONFIG_STORE_DIR=/pnpm/store -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 -w /work node:24.12.0-alpine3.22 sh -c "corepack enable && pnpm create vite app --template react-ts --yes && pnpm install --dir app"'
-```
