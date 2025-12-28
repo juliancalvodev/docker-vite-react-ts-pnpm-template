@@ -7,6 +7,9 @@ services:
 
     container_name: react-vite-app
 
+    # Define el usuario no-root para ejecutar el proceso (Seguridad y compatibilidad con DevContainers)
+    user: node
+
     environment:
       # CHOKIDAR_USEPOLLING: Obliga a Vite/React a revisar cambios en archivos mediante "muestreo".
       # Es vital en Windows/Mac porque los eventos del sistema de archivos no siempre pasan al contenedor Linux.

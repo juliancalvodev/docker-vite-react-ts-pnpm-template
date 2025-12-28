@@ -7,8 +7,14 @@ ENV PNPM_HOME="/pnpm"
 # Agrega la ruta de binarios al PATH del sistema para que los comandos (ej. pnpm, serve) sean reconocidos
 ENV PATH="$PNPM_HOME:$PATH"
 
+# Creamos las carpetas y asignamos dueño al usuario 'node' (UID 1000 en Alpine)
+RUN mkdir -p /pnpm /app && chown -R node:node /pnpm /app
+
 # Define el directorio de trabajo principal dentro del contenedor
 WORKDIR /app
+
+# Ahora ejecutamos el resto como usuario node
+USER node
 
 # Habilita Corepack (gestor nativo de Node para pnpm/yarn) y activa la versión más reciente de pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate

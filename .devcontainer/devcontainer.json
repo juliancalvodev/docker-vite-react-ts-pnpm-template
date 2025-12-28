@@ -1,0 +1,41 @@
+{
+	"name": "React-Vite-PNPM Dev Environment",
+	// Usamos tu docker-compose.yml existente
+	"dockerComposeFile": [
+		"../docker-compose.yml"
+	],
+	// Nombre del servicio definido en tu docker-compose.yml
+	"service": "app-react",
+	// Carpeta donde VS Code abrirá el proyecto dentro del contenedor
+	"workspaceFolder": "/app",
+	// Configuraciones de la interfaz de VS Code dentro del contenedor
+	"customizations": {
+		"vscode": {
+			"settings": {
+				// Asegura que VS Code use el pnpm del contenedor
+				"npm.packageManager": "pnpm",
+				"eslint.workingDirectories": [
+					"./app"
+				],
+				"editor.formatOnSave": true
+			},
+			"extensions": [
+				"dbaeumer.vscode-eslint", // Linter
+				"esbenp.prettier-vscode", // Formateador
+				"dsznajder.es7-react-js-snippets", // Snippets de React
+				"bradlc.vscode-tailwindcss" // Si usas Tailwind
+			]
+		}
+	},
+	// Importante: Al entrar al contenedor, queremos que los permisos sean correctos
+	// y que pnpm esté listo para usarse.
+	"remoteUser": "node",
+	// Expone el puerto de Vite dentro de la interfaz de VS Code
+	"forwardPorts": [
+		5173
+	],
+	// Comando que se ejecuta al crear el contenedor (opcional)
+	// "postCreateCommand": "pnpm install",
+	// Deteiene el contenedor cuando cierras VS Code
+	"shutdownAction": "stopCompose"  // usa "none" si quieres evitar que el contenedor se detenga cuando cierras VS Code
+}
