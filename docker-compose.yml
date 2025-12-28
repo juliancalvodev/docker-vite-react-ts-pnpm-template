@@ -1,26 +1,48 @@
 services:
   app-react:
+    # Configuración de construcción de la imagen
     build:
-      context: .
-      target: dev
+      context: .          # Directorio raíz donde está el Dockerfile
+      target: dev         # Utiliza específicamente el stage 'dev' del Dockerfile (Multistage build)
+
     container_name: react-vite-app
+
     environment:
-      # Activa el polling para asegurar que el Hot Reload funcione en Docker (especialmente en Windows/Mac)
+      # CHOKIDAR_USEPOLLING: Obliga a Vite/React a revisar cambios en archivos mediante "muestreo".
+      # Es vital en Windows/Mac porque los eventos del sistema de archivos no siempre pasan al contenedor Linux.
+      # Activando el polling para asegurar que el Hot Reload funcione en Docker.
       - CHOKIDAR_USEPOLLING=true
-      - CHOKIDAR_INTERVAL=1800 # Intervalo de 1.8 segundo vía variable de entorno
+
+      # Define la frecuencia de revisión (1.8 segundos). Evita consumo excesivo de CPU mientras mantiene el Hot Reload.
+      - CHOKIDAR_INTERVAL=1800
+
     volumes:
-      # Sincroniza código fuente en tiempo real
+      # Bind Mount: Sincroniza tu carpeta local 'app' con la carpeta '/app' del contenedor.
+      # Permite que tus cambios de código en VS Code se vean reflejados instantáneamente.
       - ./app:/app
-      # Volumen anónimo para node_modules: evita conflictos con el host y mejora rendimiento
+
+      # Volumen Anónimo: "Protege" la carpeta node_modules del contenedor.
+      # Evita que las dependencias instaladas en el contenedor sean sobrescritas por las del host (PC),
+      # lo cual es crítico si el host es Windows y el contenedor es Linux.
       - /app/node_modules
-      # Volumen externo compartido para el store de pnpm (caché global de paquetes)
+
+      # Volumen Externo: Conecta la caché de pnpm a un volumen persistente compartido.
+      # Permite que diferentes proyectos usen los mismos paquetes ya descargados, ahorrando espacio y tiempo.
       - pnpm_shared_store:/pnpm/store
+
     ports:
+      # Mapeo de puertos: [Puerto del Host]:[Puerto del Contenedor]
+      # Permite acceder a la app desde tu navegador en localhost:5173
       - "5173:5173"
+
+    # Habilitan la interactividad (TTY). Útil para que logs se vean correctamente y
+    # por si necesitas adjuntar una terminal al contenedor en ejecución.
     stdin_open: true
     tty: true
 
 volumes:
-  # Declaramos el volumen como externo para que varios proyectos compartan las mismas librerías
+  # Definición del volumen global para el almacenamiento de pnpm
+  # 'external: true' significa que el volumen debe ser creado manualmente antes (docker volume create ...)
+  # o que ya existe, permitiendo que varios servicios compartan el mismo almacenamiento físico.
   pnpm_shared_store:
     external: true
