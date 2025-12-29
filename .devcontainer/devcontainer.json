@@ -1,5 +1,7 @@
 {
 	"name": "React-Vite-PNPM Dev Environment",
+	// Comando de inicialización para preparar el entorno dentro del contenedor
+	"initializeCommand": "sh ${localWorkspaceFolder}/.devcontainer/setup.sh ${localWorkspaceFolder}",
 	// Usamos tu docker-compose.yml existente
 	"dockerComposeFile": [
 		"../docker-compose.yml"
