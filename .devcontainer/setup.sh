@@ -32,7 +32,6 @@ if [ ! -d "app" ]; then
       -v "$PROJECT_PATH":/work \
       -v $VOLUME_NAME:/pnpm/store \
       -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
-      -u "$(id -u):$(id -g)" \
       -w /work node:24.12.0-alpine3.22 \
       sh -c "corepack enable && pnpm create vite app --template react-ts --yes && pnpm install --dir app --store-dir /pnpm/store"
 
