@@ -43,6 +43,9 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store,uid=1000 \
 # Stage 3: Development - Entorno para desarrollo activo (usado por Docker Compose)
 FROM deps AS dev
 
+# Define el directorio de trabajo principal dentro del contenedor
+WORKDIR /work/app
+
 # Informa que el contenedor escuchará en el puerto 5173 (puerto por defecto de Vite)
 EXPOSE 5173
 

@@ -22,7 +22,8 @@
 				"eslint.workingDirectories": [
 					{ "directory": "./app", "changeProcessCWD": true }
 				],
-				"editor.formatOnSave": true
+				"editor.formatOnSave": true,
+				"terminal.integrated.cwd": "/work/app"
 			},
 			"extensions": [
 				"dbaeumer.vscode-eslint", // Linter
@@ -36,8 +37,6 @@
 	"forwardPorts": [
 		5173
 	],
-	// Comando que se ejecuta al crear el contenedor (opcional)
-	// "postCreateCommand": "pnpm install",
 	// Deteiene el contenedor cuando cierras VS Code
 	"shutdownAction": "stopCompose"  // usa "none" si quieres evitar que el contenedor se detenga cuando cierras VS Code
 }
