@@ -66,7 +66,7 @@ Si prefieres no usar la automatización de VS Code o utilizas otro editor, sigue
 
 3.  **Levantar Entorno de Desarrollo**:
     ```bash
-    docker compose up
+    docker compose up --build -d
     ```
     Accede a la aplicación en: [http://localhost:5173](http://localhost:5173)
 
