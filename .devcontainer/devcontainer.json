@@ -9,7 +9,7 @@
 	// Nombre del servicio definido en tu docker-compose.yml
 	"service": "app-react",
 	// Carpeta donde VS Code abrirá el proyecto dentro del contenedor
-	"workspaceFolder": "/app",
+	"workspaceFolder": "/work",
 	// Importante: Al entrar al contenedor, queremos que los permisos sean correctos
 	// y que pnpm esté listo para usarse.
 	"remoteUser": "node",
@@ -20,7 +20,7 @@
 				// Asegura que VS Code use el pnpm del contenedor
 				"npm.packageManager": "pnpm",
 				"eslint.workingDirectories": [
-					"./app"
+					{ "directory": "./app", "changeProcessCWD": true }
 				],
 				"editor.formatOnSave": true
 			},

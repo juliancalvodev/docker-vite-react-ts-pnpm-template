@@ -8,10 +8,10 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
 # Creamos las carpetas y asignamos dueño al usuario 'node' (UID 1000 en Alpine)
-RUN mkdir -p /pnpm/store /app && chown -R node:node /pnpm /app
+RUN mkdir -p /pnpm/store /work && chown -R node:node /pnpm /work
 
 # Define el directorio de trabajo principal dentro del contenedor
-WORKDIR /app
+WORKDIR /work
 
 # Habilita Corepack (gestor nativo de Node para pnpm/yarn) y activa la versión más reciente de pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -28,7 +28,10 @@ RUN pnpm config set store-dir /pnpm/store --global
 FROM base AS deps
 
 # Copia solo los archivos de definición de dependencias para aprovechar la caché de capas de Docker
-COPY --chown=node:node app/package.json app/pnpm-lock.yaml ./
+COPY --chown=node:node app/package.json app/pnpm-lock.yaml ./app/
+
+# Define el directorio de trabajo principal dentro del contenedor
+WORKDIR /work/app
 
 # --mount=type=cache: Crea una caché persistente en el host de Docker identificada como 'pnpm'.
 # target=/pnpm/store: Monta esa caché exactamente donde pnpm espera encontrar sus librerías.
@@ -62,7 +65,7 @@ RUN pnpm build
 FROM nginx:1.28.1-alpine3.23 AS production
 
 # Copia los archivos estáticos generados en el stage anterior al directorio público de Nginx
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /work/app/dist /usr/share/nginx/html
 
 # Expone el puerto estándar de HTTP
 EXPOSE 80

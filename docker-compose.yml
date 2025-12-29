@@ -22,12 +22,12 @@ services:
     volumes:
       # Bind Mount: Sincroniza tu carpeta local 'app' con la carpeta '/app' del contenedor.
       # Permite que tus cambios de código en VS Code se vean reflejados instantáneamente.
-      - ./app:/app
+      - .:/work
 
       # Volumen Anónimo: "Protege" la carpeta node_modules del contenedor.
       # Evita que las dependencias instaladas en el contenedor sean sobrescritas por las del host (PC),
       # lo cual es crítico si el host es Windows y el contenedor es Linux.
-      - /app/node_modules
+      - /work/app/node_modules
 
       # Volumen Externo: Conecta la caché de pnpm a un volumen persistente compartido.
       # Permite que diferentes proyectos usen los mismos paquetes ya descargados, ahorrando espacio y tiempo.
