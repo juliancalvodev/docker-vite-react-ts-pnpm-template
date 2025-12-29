@@ -7,89 +7,106 @@ Esta es una plantilla profesional para desarrollar aplicaciones modernas con **R
 
 * **Aislamiento total**: Todo el ciclo de vida (creación, desarrollo y build) ocurre dentro de contenedores.
 
-* **Gestión con pnpm**: Instalaciones ultra rápidas y eficiente uso de disco.
+* **Zero-Config con VS Code**: Inicialización automática del proyecto y del volumen persistente al abrir el contenedor.
+
+* **Gestión con pnpm**: Instalaciones ultra rápidas y uso eficiente del disco duro.
 
 * **Store compartido**: Uso de un volumen externo de Docker para compartir librerías entre múltiples proyectos y ahorrar espacio.
 
-* **Hot Reload optimizado**: Configuración lista para detectar cambios en el host desde el contenedor.
+* **Hot Reload optimizado**: Configuración lista para detectar cambios en el host desde el contenedor (HMR).
 
 * **Imagen de Producción Profesional**: Construcción multi-etapa que genera una imagen final basada en **Nginx Alpine** (~30MB).
 
 
 ## 📋 Requisitos Previos
 
-1. **Docker** y **Docker Compose** instalados en el host.
+1.  **Docker** y **Docker Compose** instalados en el sistema.
 
-2. **Volumen Global**: Crear el volumen persistente para el store de pnpm (se hace una sola vez):
-
-	```bash
-	docker volume create pnpm_shared_store
-	```
+2.  **VS Code** con la extensión [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) instalada (Recomendado para la automatización total).
 
 
-## 🚀 Guía de Inicio Rápido
+---
 
-1. **Inicializar un nuevo proyecto**
 
-	Ejecuta este comando en la carpeta del proyecto para crear la subcarpeta app/ donde estaran los archivos de la aplicación (esto descargará la imagen de Node y ejecutará el scaffolding de Vite):
+## ⚡ Guía de Inicio Rápido (Recomendado: VS Code)
 
-	```bash
-	docker run --rm \
-	  -v $(pwd):/work \
-	  -v pnpm_shared_store:/pnpm/store \
-	  -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
-	  -w /work node:24.12.0-alpine3.22 \
-	  sh -c "corepack enable && pnpm create vite app --template react-ts --yes && pnpm install --dir app --store-dir /pnpm/store"
-	```
+Si utilizas VS Code, no necesitas ejecutar comandos manuales en tu terminal local para inicializar el proyecto:
 
-2. **Levantar Entorno de Desarrollo**
+1.  Abre la carpeta raíz del proyecto en VS Code.
 
-	Una vez creado el proyecto, levanta los servicios:
+2.  Haz clic en el botón azul de la esquina inferior izquierda o abre la paleta de comandos (`Ctrl+Shift+P` / `Cmd+Shift+P`) y selecciona: **"Dev Containers: Reopen in Container"**.
 
-	```bash
-	docker-compose up
-	```
+3.  **Automatización**: El entorno detectará automáticamente si el volumen `pnpm_shared_store` existe (y lo creará si no) y ejecutará el scaffolding de Vite en la carpeta `app/` si aún no ha sido creada.
 
-	Accede a la aplicación en: [http://localhost:5173](http://localhost:5173)
+4.  La terminal integrada se abrirá automáticamente en la ruta `/work/app`, lista para trabajar.
 
-	> [!TIP]
-	> Si los cambios en el código no se reflejan automáticamente (Hot Reload), asegúrate de que tu `vite.config.ts` incluya la configuración de `watch` con `usePolling: true` (ya configurado vía variables de entorno en el `docker-compose.yml`).
 
-3. **Instalar nuevas dependencias**
+---
 
-	Para añadir paquetes sin salir del entorno Docker (ejemplo: ```axios```):
 
-	```bash
-	docker-compose exec app-react pnpm add axios
-	```
+## 🛠️ Guía Manual (Línea de comandos)
 
-4. **Construir Imagen de Producción**
+Si prefieres no usar la automatización de VS Code o utilizas otro editor, sigue estos pasos:
 
-	Para generar la imagen final lista para ser desplegada en cualquier servidor:
+1.  **Crear el Volumen Global** (Se hace una sola vez):
+    ```bash
+    docker volume create pnpm_shared_store
+    ```
 
-	```bash
-	docker build --target production -t nombre-de-tu-app:latest .
-	```
+2.  **Inicializar el proyecto**:
+    Ejecuta este comando para crear la subcarpeta `app/` (esto descargará la imagen de Node y ejecutará el scaffolding de Vite):
+    ```bash
+    docker run --rm \
+      -v $(pwd):/work \
+      -v pnpm_shared_store:/pnpm/store \
+      -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
+      -w /work node:24.12.0-alpine3.22 \
+      sh -c "corepack enable && pnpm create vite app --template react-ts --yes && pnpm install --dir app --store-dir /pnpm/store"
+    ```
+
+3.  **Levantar Entorno de Desarrollo**:
+    ```bash
+    docker compose up
+    ```
+    Accede a la aplicación en: [http://localhost:5173](http://localhost:5173)
+
+
+---
 
 
 ## 📂 Estructura del Proyecto
 
-* ```Dockerfile```: Configuración multi-etapa (Desarrollo y Producción).
+* `.devcontainer/`: Configuración y scripts de automatización para VS Code.
 
-* ```docker-compose.yml```: Orquestador para el entorno de desarrollo y volúmenes.
+* `app/`: Carpeta que contiene el código fuente de la aplicación React (generada automáticamente).
 
-* ```.dockerignore```: Optimización de contexto para construcción de imágenes.
+* `Dockerfile`: Definición de la imagen con múltiples etapas (deps, dev, builder, production).
 
-* ```.gitignore```: Reglas específicas para evitar subir basura de Docker/pnpm a GitHub.
+* `docker-compose.yml`: Orquestador para el entorno de desarrollo, volúmenes y red.
+
+
+## 🛠 Comandos Útiles dentro del Contenedor
+
+* **Instalar nuevas dependencias**: `pnpm add <nombre-paquete>` (desde la terminal de VS Code).
+
+* **Desde el host**: `docker compose exec app-react pnpm add <nombre-paquete>`.
+
+* **Construir Imagen de Producción**:
+    ```bash
+    docker build --target production -t nombre-de-tu-app:latest .
+    ```
 
 
 ## 🧹 Limpieza y Mantenimiento
 
-* **Detener contenedores**: ```docker-compose down```
+* **Detener contenedores**: `docker compose down`
 
-* **Limpiar módulos del contenedor**: ```docker-compose down -v``` (Elimina volúmenes locales del proyecto, pero mantiene el ```pnpm_shared_store```).
+* **Limpiar módulos del contenedor**: `docker compose down -v` (Elimina volúmenes locales, pero mantiene el store global).
 
-* **Limpiar Store Global**: Si deseas liberar espacio de todas las librerías descargadas: ```docker volume rm pnpm_shared_store```.
+* **Limpiar Store Global**: Si deseas liberar espacio de todas las librerías descargadas de todos tus proyectos:
+    ```bash
+    docker volume rm pnpm_shared_store
+    ```
 
 
 ## 📜 Licencia
